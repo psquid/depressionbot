@@ -30,11 +30,11 @@ div#title {
     font-size: 42px;
     font-weight: bold;
     margin: 0 0 10px 0;
-    color: #444;
+    color: #ccc;
 }
 
 div#title a {
-	color: #000;
+	color: #fff;
 }
 
 div#main {
