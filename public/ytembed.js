@@ -7,14 +7,14 @@ document.getElementsByTagName('script')[0].parentNode.insertBefore(apiEmbed, doc
 function onYouTubePlayerAPIReady() {
     var youTubePlaceholders = document.getElementsByClassName('ytplaceholder');
     for(var i = 0; i < youTubePlaceholders.length; i++) {
-        var videoURL = youTubePlaceholders[i].innerText;
+        var videoURL = youTubePlaceholders[i].innerHTML;
         var videoIDMaybe = videoURL.match(/[?&]v=([A-Za-z0-9\-_]+)(?:[?&]|$)/);
         youTubePlaceholders[i].innerText = '';
         if(videoIDMaybe) {
             var ytVideoID = videoIDMaybe[1];
             var player = new YT.Player(youTubePlaceholders[i], {
-                height: '290',
-                width: '480',
+                height: '203',
+                width: '336',
                 videoId: ytVideoID
             });
         }
