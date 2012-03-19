@@ -24,7 +24,9 @@ var webInterface = function(dbot) {
     // Lists quotes in a category
     app.get('/quotes/:key', function(req, res) {
         var key = req.params.key.toLowerCase();
-        if(dbot.db.quoteArrs.hasOwnProperty(key)) {
+        if(dbot.db.quoteAliases.hasOwnProperty(key)) {
+            res.redirect('/quotes/' + dbot.db.quoteAliases[key]);
+        } else if(dbot.db.quoteArrs.hasOwnProperty(key)) {
             res.render('quotes', { 'name': dbot.name, 'quotes': dbot.db.quoteArrs[key], locals: { 'url_regex': RegExp.prototype.url_regex() } });
         } else {
             res.render('error', { 'name': dbot.name, 'message': 'No quotes under that key.' });
