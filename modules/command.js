@@ -66,7 +66,7 @@ var command = function(dbot) {
                     } else {
                         q[1] = q[1].trim();
                         key = dbot.cleanNick(q[1])
-                        if(dbot.db.quoteArrs.hasOwnProperty(key) && dbot.moduleNames.include('quotes')) {
+                        if(dbot.moduleNames.include('quotes') && (dbot.db.quoteArrs.hasOwnProperty(key) || dbot.db.quoteAliases.hasOwnProperty(key))) {
                             var params = ['~q'];
                             key.split(' ').each((function(word) {
                                 this.push(word);

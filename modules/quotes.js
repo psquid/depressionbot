@@ -1,5 +1,9 @@
 var quotes = function(dbot) {
     var quotes = dbot.db.quoteArrs;
+    if(!(dbot.db.hasOwnProperty('quoteAliases'))) {
+        dbot.db.quoteAliases = {};
+    }
+    var aliases = dbot.db.quoteAliases;
     var addStack = [];
     var rmAllowed = true;
 
@@ -50,8 +54,11 @@ var quotes = function(dbot) {
             if(q) {
                 q[1] = q[1].trim();
                 key = q[1].toLowerCase();
+                if(aliases.hasOwnProperty(key)) {
+                    key = aliases[key];
+                }
                 if(quotes.hasOwnProperty(key)) {
-                    dbot.say(data.channel, q[1] + ': ' + interpolatedQuote(key));
+                    dbot.say(data.channel, key + ': ' + interpolatedQuote(key));
                 } else {
                     dbot.say(data.channel, 'Nobody loves ' + q[1]);
                 }
@@ -85,7 +92,9 @@ var quotes = function(dbot) {
             } else {
                 params[1].trim();
                 key = params[1].toLowerCase();
-                if(!quotes.hasOwnProperty(key)) {
+                if(aliases.hasOwnProperty(key)) {
+                    dbot.say(data.channel, '\'' + key + '\' is an alias of \'' + aliases[key] + '\'. Search that instead.');
+                } else if(!quotes.hasOwnProperty(key)) {
                     dbot.say(data.channel, 'That category has no quotes in it. Commence incineration.');
                 } else {
                     var matches = [];
@@ -111,8 +120,11 @@ var quotes = function(dbot) {
                 if(q) {
                     q[1] = q[1].trim()
                     key = q[1].toLowerCase();
-                    if(quotes.hasOwnProperty(q[1])) {
-                        if(!dbot.db.locks.include(q[1]) || dbot.admin.include(data.user)) {
+                    if(aliases.hasOwnProperty(key)) {
+                        key = aliases[key];
+                    }
+                    if(quotes.hasOwnProperty(key)) {
+                        if(!(dbot.db.locks.include(q[1]) || dbot.db.locks.include(key)) || dbot.admin.include(data.user)) {
                             var quote = quotes[key].pop();
                             if(quotes[key].length === 0) {
                                 delete quotes[key];
@@ -128,6 +140,9 @@ var quotes = function(dbot) {
                 } else {
                     var last = addStack.pop();
                     if(last) {
+                        if(aliases.hasOwnProperty(last)) {
+                            last = aliases[last];
+                        }
                         if(!dbot.db.locks.include(last)) {
                             quotes[last].pop();
                             rmAllowed = false;
@@ -198,6 +213,9 @@ var quotes = function(dbot) {
             var q = data.message.valMatch(/^~qadd ([\d\w\s-]+?)[ ]?=[ ]?(.+)$/, 3);
             if(q) {
                 key = q[1].toLowerCase();
+                if(aliases.hasOwnProperty(key)) {
+                    key = aliases[key];
+                }
                 if(!Object.isArray(quotes[key])) {
                     quotes[key] = [];
                 } else {
@@ -209,7 +227,7 @@ var quotes = function(dbot) {
                 quotes[key].push(q[2]);
                 addStack.push(q[1]);
                 rmAllowed = true;
-                dbot.say(data.channel, 'Quote saved in \'' + q[1] + '\' (' + quotes[key].length + ')');
+                dbot.say(data.channel, 'Quote saved in \'' + key + '\' (' + quotes[key].length + ')');
             } else {
                 dbot.say(data.channel, 'Invalid syntax. Initiate incineration.');
             }
@@ -220,6 +238,9 @@ var quotes = function(dbot) {
             if(q) {
                 q[1] = q[1].trim();
                 key = q[1].toLowerCase();
+                if(aliases.hasOwnProperty(key)) {
+                    key = aliases[key];
+                }
                 if(!quotes.hasOwnProperty(key) || (quotes.hasOwnProperty(key) && 
                         quotes[key].length == 1)) {
                     quotes[key] = [q[2]];
@@ -261,6 +282,44 @@ var quotes = function(dbot) {
                 dbot.say(data.channel, "Pruning empty quote categories: " + pruned.join(", "));
             } else {
                 dbot.say(data.channel, "No empty quote categories. Commence incineration.");
+            }
+        },
+
+        '~qalias': function(data) {
+            var aliasParams = data.message.valMatch(/^~qalias ([\d\w\s-]*)=([\d\w\s-]*)$/, 3);
+            if(!(aliasParams)) {
+                dbot.say(data.channel, 'Syntax error. Commence incineration.');
+            } else {
+                var aSource = dbot.cleanNick(aliasParams[1].toLowerCase());
+                var aTarget = dbot.cleanNick(aliasParams[2].toLowerCase());
+                if(quotes.hasOwnProperty(aSource)) {
+                    dbot.say(data.channel, '\'' + aSource + '\' is already a populated category. Commence incineration.');
+                } else {
+                    var changeMessage = 'Set \'' + aSource + '\' as an alias of \'' + aTarget + '\'';
+                    if(aliases.hasOwnProperty(aSource)) {
+                        changeMessage += ' (was previously an alias of \'' + aliases[aSource] + '\').';
+                    } else {
+                        changeMessage += '.'
+                    }
+                    aliases[aSource] = aTarget;
+                    dbot.say(data.channel, changeMessage);
+                }
+            }
+        },
+
+        '~qunalias': function(data) {
+            var unaliasParams = data.message.valMatch(/^~qunalias ([\d\w\s-]*)$/, 2);
+            if(!(unaliasParams)) {
+                dbot.say(data.channel, 'Syntax error. Commence incineration.');
+            } else {
+                var aSource = dbot.cleanNick(unaliasParams[1].toLowerCase());
+                if (!(aliases.hasOwnProperty(aSource))) {
+                    dbot.say(data.channel, '\'' + aSource + '\' is already not an alias of anything!');
+                } else {
+                    var msg = '\'' + aSource + '\' is no longer an alias of \'' + aliases[aSource] + '\'.';
+                    delete aliases[aSource];
+                    dbot.say(data.channel, msg);
+                }
             }
         }
     };
