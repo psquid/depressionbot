@@ -12,6 +12,8 @@ var quotes = function(dbot) {
         }
 
         var quoteString = quotes[key].random();
+
+        // Parse quote interpolations
         var quoteRefs = quoteString.match(/~~([\d\w\s-]*)~~/g);
         var thisRef;
 
@@ -25,9 +27,23 @@ var quotes = function(dbot) {
             }
         }
 
+        // Parse quote parameters
+        /*
+        var paramRefs = quoteString.match(/~~\$([1-9])~~/g);
+        var thisParam;
+
+        while(paramRefs && (thisParam = paramRefs.shift()) !== undefined) {
+            thisParam = thisParam[1];
+            console.log(thisParam);
+            if(thisParam < params.length) {
+                quoteString = quoteString.replace("~~$" + thisParam + "~~", params[thisParam]);
+            }
+        }
+        */
+
         return quoteString;
     };
-    
+
     var commands = {
         '~q': function(data, params) { 
             var q = data.message.valMatch(/^~q ([\d\w\s-]*)/, 2);
@@ -179,7 +195,7 @@ var quotes = function(dbot) {
         },
 
         '~qadd': function(data, params) {
-            var q = data.message.valMatch(/^~qadd ([\d\w\s-]*)=(.+)$/, 3);
+            var q = data.message.valMatch(/^~qadd ([\d\w\s-]+?)[ ]?=[ ]?(.+)$/, 3);
             if(q) {
                 key = q[1].toLowerCase();
                 if(!Object.isArray(quotes[key])) {
