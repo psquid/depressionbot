@@ -60,7 +60,7 @@ var quotes = function(dbot) {
                 if(quotes.hasOwnProperty(key)) {
                     dbot.say(data.channel, key + ': ' + interpolatedQuote(key));
                 } else {
-                    dbot.say(data.channel, dbot.strings[dbot.language].category_not_found + q[1]);
+                    dbot.say(data.channel, dbot.strings[dbot.language].category_not_found.format({'category': q[1]}));
                 }
             }
         },
@@ -133,10 +133,10 @@ var quotes = function(dbot) {
                             dbot.say(data.channel, '\'' + quote + '\'' + 
                                     dbot.strings[dbot.language].removed_from + q[1]);
                         } else {
-                            dbot.say(data.channel, q[1] + dbot.strings[dbot.language].locked_category);
+                            dbot.say(data.channel, dbot.strings[dbot.language].locked_category.format({'category': q[1]}));
                         }
                     } else {
-                        dbot.say(data.channel, dbot.strings[dbot.language].no_quotes + q[1]);
+                        dbot.say(data.channel, dbot.strings[dbot.language].no_quotes.format({'category': q[1]}));
                     }
                 } else {
                     var last = addStack.pop();
@@ -147,9 +147,9 @@ var quotes = function(dbot) {
                         if(!dbot.db.locks.include(last)) {
                             quotes[last].pop();
                             rmAllowed = false;
-                            dbot.say(data.channel, dbot.strings[dbot.language].last_removed + last + '.');
+                            dbot.say(data.channel, dbot.strings[dbot.language].last_removed.format({'category': last}));
                         } else {
-                            dbot.say(data.channel, last + dbot.strings[dbot.language].locked_category);
+                            dbot.say(data.channel, dbot.strings[dbot.language].locked_category.format({'category': last}));
                         }
                     } else {
                         dbot.say(data.channel, dbot.strings[dbot.language].no_recent_adds);
@@ -173,17 +173,15 @@ var quotes = function(dbot) {
                                     delete quotes[q[1]];
                                 }
                                 rmAllowed = false;
-                                dbot.say(data.channel, '\'' + q[2] + '\'' +
-                                        dbot.strings[dbot.language].removed_from + q[1]);
+                                dbot.say(data.channel, dbot.strings[dbot.language].removed_from.format({'category': q[1], 'quote': q[2]}));
                             } else {
-                                dbot.say(data.channel, '\'' + q[2] + '\'' +
-                                        dbot.strings[dbot.language].q_not_exist_under + '\'' + q[1] + '\'.');
+                                dbot.say(data.channel, dbot.strings[dbot.language].q_not_exist_under.format({'category': q[1], 'quote': q[2]}));
                             }
                         } else {
-                            dbot.say(data.channel, q[1] + dbot.strings[dbot.language].locked_category);
+                            dbot.say(data.channel, dbot.strings[dbot.language].locked_category.format({'category': q[1]}));
                         }
                     } else {
-                        dbot.say(data.channel, dbot.strings[dbot.language].no_quotes + q[1]);
+                        dbot.say(data.channel, dbot.strings[dbot.language].no_quotes.format({'category': q[1]}));
                     }
                 } else {
                     dbot.say(data.channel, dbot.strings[dbot.language].syntax_error);
@@ -208,7 +206,7 @@ var quotes = function(dbot) {
                 for(var category in quotes) {
                     totalQuoteCount += category.length;
                 }
-                dbot.say(data.channel, dbot.strings[dbot.language].total_quotes + totalQuoteCount + '.');
+                dbot.say(data.channel, dbot.strings[dbot.language].total_quotes.format({'count': totalQuoteCount}));
             }
         },
 
@@ -230,12 +228,7 @@ var quotes = function(dbot) {
                 quotes[key].push(q[2]);
                 addStack.push(q[1]);
                 rmAllowed = true;
-<<<<<<< HEAD
-                dbot.say(data.channel, 'Quote saved in \'' + key + '\' (' + quotes[key].length + ')');
-=======
-                dbot.say(data.channel, dbot.strings[dbot.language].quote_saved +
-                        '\'' + q[1] + '\' (' + quotes[key].length + ')');
->>>>>>> FETCH_HEAD
+                dbot.say(data.channel, dbot.strings[dbot.language].quote_saved.format({'category': key, 'count': quotes[key].length}));
             } else {
                 dbot.say(data.channel, dbot.strings[dbot.language].syntax_error);
             }
@@ -252,7 +245,7 @@ var quotes = function(dbot) {
                 if(!quotes.hasOwnProperty(key) || (quotes.hasOwnProperty(key) && 
                         quotes[key].length == 1)) {
                     quotes[key] = [q[2]];
-                    dbot.say(data.channel, dbot.strings[dbot.language].quote_saved + q[1]);
+                    dbot.say(data.channel, dbot.strings[dbot.language].quote_saved.format({'category': q[1], 'count': 1}));
                 } else {
                     dbot.say(data.channel, dbot.strings[dbot.language].quote_replace);
                 }
@@ -287,7 +280,7 @@ var quotes = function(dbot) {
                 }
             }
             if(pruned.length > 0) {
-                dbot.say(data.channel, dbot.strings[dbot.language].prune + pruned.join(", "));
+                dbot.say(data.channel, dbot.strings[dbot.language].prune.format({'categories': pruned.join(", ")}));
             } else {
                 dbot.say(data.channel, dbot.strings[dbot.language].no_prune);
             }
