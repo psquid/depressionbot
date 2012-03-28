@@ -93,7 +93,7 @@ var quotes = function(dbot) {
                 params[1].trim();
                 key = params[1].toLowerCase();
                 if(aliases.hasOwnProperty(key)) {
-                    dbot.say(data.channel, '\'' + key + '\' is an alias of \'' + aliases[key] + '\'. Search that instead.');
+                    dbot.say(data.channel, '\'' + key + '\' is an alias of \'' + aliases[key] + '\'. Search that instead.'); // TODO: translation string
                 } else if(!quotes.hasOwnProperty(key)) {
                     dbot.say(data.channel, dbot.strings[dbot.language].empty_category);
                 } else {
