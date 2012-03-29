@@ -118,8 +118,7 @@ var quotes = function(dbot) {
                                 delete quotes[key];
                             }
                             rmAllowed = false;
-                            dbot.say(data.channel, '\'' + quote + '\'' + 
-                                    dbot.strings[dbot.language].removed_from + q[1]);
+                            dbot.say(data.channel, dbot.strings[dbot.language].removed_from.format({'category': q[1], 'quote': quote}));
                         } else {
                             dbot.say(data.channel, dbot.strings[dbot.language].locked_category.format({'category': q[1]}));
                         }
